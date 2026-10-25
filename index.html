@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VESPERA NOIR — Pure Aura</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tone.js for Web Audio Synth Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#030304',
+                        blackout: '#070709',
+                        gold: {
+                            light: '#FFF099',
+                            DEFAULT: '#D4AF37',
+                            dark: '#9A7B1C',
+                            glow: 'rgba(212, 175, 55, 0.4)',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #030304;
+            color: #e4e4e7;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        ::selection {
+            background: #D4AF37;
+            color: #030304;
+        }
+
+        /* Glassmorphism Panels */
+        .glass-gold {
+            background: rgba(10, 10, 13, 0.75);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 240, 153, 0.18);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-gold:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.35), inset 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #9A7B1C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* SUZI MODE STYLES (Rose Gold / Lavender Ethereal Vibe) */
+        body.suzi-mode {
+            background-color: #0c0810 !important;
+        }
+        body.suzi-mode .glass-gold {
+            background: rgba(20, 12, 25, 0.8) !important;
+            border-color: rgba(255, 182, 193, 0.4) !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 192, 203, 0.25) !important;
+        }
+        body.suzi-mode .glass-gold:hover {
+            border-color: rgba(255, 182, 193, 0.85) !important;
+            box-shadow: 0 0 45px rgba(255, 182, 193, 0.45), inset 0 0 20px rgba(230, 230, 250, 0.25) !important;
+        }
+        body.suzi-mode .text-gold-gradient {
+            background: linear-gradient(135deg, #FFF0F5 0%, #FFB6C1 50%, #DA70D6 100%) !important;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CRIMSON OVERDRIVE (AURA PHONK MODE) */
+        body.aura-active {
+            background-color: #0a0103 !important;
+            animation: screenShake 0.35s ease-in-out infinite alternate;
+        }
+        body.aura-active .glass-gold {
+            background: rgba(20, 5, 8, 0.8) !important;
+            border-color: rgba(239, 68, 68, 0.75) !important;
+            box-shadow: 0 0 55px rgba(239, 68, 68, 0.45), inset 0 0 25px rgba(248, 113, 113, 0.3) !important;
+        }
+        body.aura-active .aura-glow-orb {
+            opacity: 1 !important;
+            transform: scale(1.4) !important;
+            background: rgba(239, 68, 68, 0.25) !important;
+        }
+
+        @keyframes screenShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-2px, 2px) rotate(-0.3deg); }
+            40% { transform: translate(2px, -2px) rotate(0.3deg); }
+            60% { transform: translate(-1px, 1px) rotate(-0.1deg); }
+            80% { transform: translate(1px, -1px) rotate(0.1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030304; }
+        ::-webkit-scrollbar-thumb { background: #1a1a22; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+    </style>
+</head>
+<body class="min-h-screen relative text-zinc-300">
+
+    <!-- Particle Background Canvas -->
+    <canvas id="ambientCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+
+    <!-- Atmospheric Lighting Orbs -->
+    <div class="aura-glow-orb fixed top-[-10%] left-[20%] w-[600px] h-[600px] bg-gold/15 rounded-full blur-[160px] pointer-events-none transition-all duration-1000 z-0"></div>
+    <div class="aura-glow-orb fixed bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-amber-900/15 rounded-full blur-[160px] pointer-events-none transition-all duration-1000 z-0"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-16">
+
+        <!-- NAVBAR -->
+        <header class="glass-gold rounded-full px-6 py-4 mb-12 flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full border border-gold/40 flex items-center justify-center bg-gold/5 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                    <span id="navLogoLetter" class="font-serif italic font-bold text-gold text-lg">V</span>
+                </div>
+                <span id="navTitle" class="font-serif tracking-[0.2em] text-xs uppercase text-zinc-300 font-semibold whitespace-nowrap">Vespera Noir</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- SPECIAL FRIEND BUTTON (10 clicks to unlock Suzi, no count/name visible) -->
+                <button onclick="handleSpecialFriendClick()" class="bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs uppercase tracking-widest px-4 py-2 rounded-full transition-all duration-300 flex items-center space-x-2 shadow-[0_0_15px_rgba(255,182,193,0.25)] cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-heart text-pink-400"></i>
+                    <span>Special Friend</span>
+                </button>
+
+                <!-- AURA OVERDRIVE BUTTON -->
+                <button onclick="toggleAuraMode()" class="bg-gold/10 hover:bg-gold/20 border border-gold/40 text-gold text-xs uppercase tracking-widest px-4 py-2 rounded-full transition-all duration-300 flex items-center space-x-2 shadow-[0_0_15px_rgba(212,175,55,0.2)] cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-bolt text-gold animate-pulse"></i>
+                    <span id="auraBtnText">Overdrive</span>
+                </button>
+
+                <!-- AUDIO SETTINGS TOGGLE -->
+                <button onclick="openAudioSettings()" class="bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-full transition-all flex items-center space-x-1.5 cursor-pointer" title="Audio Settings">
+                    <i class="fa-solid fa-sliders text-gold"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="mb-16 text-center relative">
+            <div class="inline-block mb-6 relative group cursor-pointer" onclick="triggerAuraBurst()">
+                <div class="w-24 h-24 rounded-full glass-gold flex items-center justify-center border border-gold/40 shadow-[0_0_35px_rgba(212,175,55,0.25)] relative mx-auto">
+                    <i id="heroCrownIcon" class="fa-solid fa-crown text-3xl text-gold-gradient transform group-hover:scale-110 transition duration-500"></i>
+                </div>
+            </div>
+
+            <h1 id="heroMainTitle" class="font-serif text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-white mb-4 px-2 whitespace-nowrap">
+                VESPERA <span class="font-semibold italic text-gold-gradient">NOIR</span>
+            </h1>
+            
+            <p id="heroSubtitle" class="font-serif italic text-base md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-8 font-light tracking-wide px-4">
+                "Operating from the shadows, curating standard-setting aesthetic and commanding quiet influence."
+            </p>
+
+            <!-- BACK TO MAIN VIEW BUTTON -->
+            <div id="backButtonContainer" class="hidden mb-8">
+                <button onclick="resetToMainView()" class="bg-zinc-900/80 hover:bg-black border border-pink-400/50 text-pink-300 text-xs uppercase tracking-[0.2em] px-6 py-3 rounded-full transition-all shadow-[0_0_20px_rgba(255,182,193,0.3)] inline-flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Return to Vespera Noir</span>
+                </button>
+            </div>
+
+            <!-- CLEAN AURA METRICS (Fixed styling & bug-free layout) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-8">
+                <div class="glass-gold p-5 rounded-2xl text-center">
+                    <div id="metric1Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">∞</div>
+                    <div id="metric1Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Aura Level</div>
+                </div>
+                <div class="glass-gold p-5 rounded-2xl text-center">
+                    <div id="metric2Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">TOP 0.1%</div>
+                    <div id="metric2Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Status</div>
+                </div>
+                <div class="glass-gold p-5 rounded-2xl text-center">
+                    <div id="metric3Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">UNMATCHED</div>
+                    <div id="metric3Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Presence</div>
+                </div>
+                <div class="glass-gold p-5 rounded-2xl text-center">
+                    <div id="metric4Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">CLASSIFIED</div>
+                    <div id="metric4Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Influence</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIVE DISCORD & SPOTIFY CARD -->
+        <section class="mb-16">
+            <div class="glass-gold p-6 md:p-10 rounded-3xl relative overflow-hidden border border-gold/30">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left w-full sm:w-auto">
+                        <div class="relative flex-shrink-0">
+                            <img id="dcAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-20 h-20 rounded-full border-2 border-gold/50 object-cover shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                            <span id="dcStatusDot" class="w-5 h-5 rounded-full bg-zinc-600 border-2 border-black absolute bottom-0 right-0"></span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                <h3 id="dcUsername" class="font-serif text-2xl text-white font-medium whitespace-nowrap">_gamer4ever2010</h3>
+                                <span class="text-[10px] bg-gold/10 text-gold border border-gold/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">Live Sync</span>
+                            </div>
+                            <p id="dcCustomStatus" class="text-xs text-zinc-400 italic mt-1 whitespace-nowrap">Founder of Vespera Noir</p>
+                            <p id="dcActivity" class="text-xs text-gold mt-2 font-mono flex items-center justify-center sm:justify-start space-x-2 whitespace-nowrap">
+                                <i class="fa-brands fa-discord"></i>
+                                <span>Connecting to Lanyard Gateway...</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <button onclick="copyDiscordBio()" class="bg-black/60 hover:bg-black/80 border border-gold/30 text-gold px-6 py-3 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center space-x-2 flex-shrink-0 w-full sm:w-auto justify-center cursor-pointer whitespace-nowrap">
+                        <i id="copyIcon" class="fa-regular fa-copy"></i>
+                        <span id="copyBtnText">Copy Profile Bio</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="mainFooter" class="text-center py-8 border-t border-zinc-900 text-xs text-zinc-400 tracking-widest uppercase whitespace-nowrap">
+            © Vespera Noir — Powered by Pure Aura & Lanyard Gateway
+        </footer>
+    </div>
+
+    <!-- AUDIO SETTINGS MODAL -->
+    <div id="audioSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-gold p-8 rounded-3xl max-w-md w-full relative border border-gold/40 transform scale-95 transition-transform duration-300">
+            <button onclick="closeAudioSettings()" class="absolute top-6 right-6 text-zinc-400 hover:text-gold text-lg cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-serif text-2xl text-white mb-2 font-medium">Audio Engine Settings</h3>
+            <p class="text-xs text-zinc-400 mb-6 font-light">Customize Web Audio synthesis presets and master volume.</p>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gold mb-2">Master Volume (<span id="volLabel">80%</span>)</label>
+                    <input type="range" min="0" max="100" value="80" oninput="updateVolume(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gold mb-2">Sound Preset</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="setSynthPreset('obsidian')" id="presetObsidian" class="border border-gold bg-gold/10 text-gold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">Obsidian</button>
+                        <button onclick="setSynthPreset('crimson')" id="presetCrimson" class="border border-zinc-700 bg-black/40 text-zinc-400 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">Soft Chime</button>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-800 flex justify-between items-center">
+                    <span class="text-xs text-zinc-400">Test Audio Feedback</span>
+                    <button onclick="playTestSound()" class="border border-gold/40 text-gold hover:bg-gold/10 px-4 py-2 rounded-xl text-xs uppercase tracking-widest transition-colors cursor-pointer">Play Chime</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT ENGINE & UNIQUE AUDIO SOUNDSCAPES -->
+    <script>
+        let synth = null;
+        let soundscapeSynth = null;
+        let soundscapeLoop = null;
+        let isAudioInitialized = false;
+        let currentPreset = 'obsidian';
+        let isMusicPlaying = false;
+
+        function initAudioEngine() {
+            if (isAudioInitialized) return;
+            try {
+                Tone.start();
+                
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    maxPolyphony: 6,
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 0.05, decay: 0.6, sustain: 0.1, release: 1.5 }
+                }).toDestination();
+                synth.volume.value = -12;
+
+                // Flexible soundscape synthesizer for background music
+                soundscapeSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 1.5, decay: 2.0, sustain: 0.3, release: 3.0 }
+                }).toDestination();
+                soundscapeSynth.volume.value = -16;
+
+                isAudioInitialized = true;
+            } catch(e) {}
+        }
+
+        function playTone(notes, duration = "8n") {
+            try {
+                initAudioEngine();
+                if (synth && Tone.context.state === 'running') {
+                    synth.triggerAttackRelease(notes, duration);
+                }
+            } catch(e) {}
+        }
+
+        // Distinct music track for Vespera Noir (Deep, mysterious obsidian chords)
+        function startVesperaMusic() {
+            initAudioEngine();
+            if (isMusicPlaying) return;
+            isMusicPlaying = true;
+            try {
+                Tone.Transport.bpm.value = 55;
+                const vesperaChords = [
+                    ["C2", "G2", "D3", "Bb3"],
+                    ["Ab1", "Eb2", "C3", "G3"],
+                    ["F2", "C3", "Ab3", "Eb4"],
+                    ["G1", "D2", "Bb2", "F3"]
+                ];
+                let index = 0;
+                soundscapeLoop = new Tone.Loop(time => {
+                    if (!isMusicPlaying) return;
+                    soundscapeSynth.triggerAttackRelease(vesperaChords[index % vesperaChords.length], "1m", time);
+                    index++;
+                }, "1m").start(0);
+                Tone.Transport.start();
+            } catch(e) {}
+        }
+
+        // Completely unique, magical, dreamy music track for Suzi Mode
+        function startSuziMusic() {
+            initAudioEngine();
+            if (isMusicPlaying) return;
+            isMusicPlaying = true;
+            try {
+                Tone.Transport.bpm.value = 70;
+                const suziChords = [
+                    ["C4", "E4", "G4", "B4"],
+                    ["A3", "C4", "E4", "G4"],
+                    ["F3", "A3", "C4", "E4"],
+                    ["G3", "B3", "D4", "F4"]
+                ];
+                let index = 0;
+                soundscapeLoop = new Tone.Loop(time => {
+                    if (!isMusicPlaying) return;
+                    soundscapeSynth.triggerAttackRelease(suziChords[index % suziChords.length], "1m", time);
+                    index++;
+                }, "1m").start(0);
+                Tone.Transport.start();
+            } catch(e) {}
+        }
+
+        function stopMusic() {
+            isMusicPlaying = false;
+            try {
+                if (soundscapeLoop) soundscapeLoop.dispose();
+                Tone.Transport.stop();
+            } catch(e) {}
+        }
+
+        function updateVolume(val) {
+            document.getElementById('volLabel').innerText = val + '%';
+            let db = val == 0 ? -60 : 20 * Math.log10(val / 100);
+            if (synth) synth.volume.value = db;
+            if (soundscapeSynth) soundscapeSynth.volume.value = db - 6;
+        }
+
+        function setSynthPreset(preset) {
+            currentPreset = preset;
+            const obsBtn = document.getElementById('presetObsidian');
+            const crmBtn = document.getElementById('presetCrimson');
+            if (preset === 'obsidian') {
+                obsBtn.className = "border border-gold bg-gold/10 text-gold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer";
+                crmBtn.className = "border border-zinc-700 bg-black/40 text-zinc-400 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer";
+                if(synth) synth.set({ oscillator: { type: 'sine' } });
+            } else {
+                crmBtn.className = "border border-pink-400 bg-pink-500/10 text-pink-300 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer";
+                obsBtn.className = "border border-zinc-700 bg-black/40 text-zinc-400 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer";
+                if(synth) synth.set({ oscillator: { type: 'triangle' } });
+            }
+            playTone(["C4", "G4"], "8n");
+        }
+
+        function openAudioSettings() {
+            const modal = document.getElementById('audioSettingsModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-95');
+            modal.children[0].classList.add('scale-100');
+            playTone("C5", "8n");
+        }
+
+        function closeAudioSettings() {
+            const modal = document.getElementById('audioSettingsModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-95');
+        }
+
+        function playTestSound() {
+            playTone(["C4", "E4", "G4", "C5"], "4n");
+        }
+
+        // -------------------------------------------------------------
+        // Secret 10-Click Special Friend (SUZI MODE) Logic with Go Back
+        // -------------------------------------------------------------
+        let specialClickCount = 0;
+        let suziModeActive = false;
+
+        function handleSpecialFriendClick() {
+            specialClickCount++;
+            playTone(["F4", "A4", "C5"], "8n");
+
+            if (specialClickCount >= 10 && !suziModeActive) {
+                activateSuziMode();
+            }
+        }
+
+        function activateSuziMode() {
+            suziModeActive = true;
+            if (auraActive) toggleAuraMode();
+
+            document.body.classList.add('suzi-mode');
+            document.getElementById('navLogoLetter').innerText = 'S';
+            document.getElementById('navLogoLetter').className = 'font-serif italic font-bold text-pink-300 text-lg';
+            document.getElementById('navTitle').innerText = 'SUZI NOIR';
+            document.getElementById('heroCrownIcon').className = 'fa-solid fa-gem text-3xl text-pink-300 transform group-hover:scale-110 transition duration-500';
+            document.getElementById('heroMainTitle').innerHTML = 'SUZI <span class="font-semibold italic text-pink-300">NOIR</span>';
+            document.getElementById('heroSubtitle').innerText = '"The ethereal resonance of loyalty, elegance, and unmatched aura."';
+            document.getElementById('mainFooter').innerText = '© Vespera Noir & Suzi — Special Friendship Domain';
+            document.getElementById('copyBtnText').innerText = 'Copy Suzi Discord';
+
+            // Epic Suzi Metrics Update
+            document.getElementById('metric1Val').innerText = 'MAX';
+            document.getElementById('metric1Sub').innerText = 'ELEGANCE';
+            document.getElementById('metric2Val').innerText = 'ROYALTY';
+            document.getElementById('metric2Sub').innerText = 'TIER';
+            document.getElementById('metric3Val').innerText = 'ETHEREAL';
+            document.getElementById('metric3Sub').innerText = 'PRESENCE';
+            document.getElementById('metric4Val').innerText = 'SOVEREIGN';
+            document.getElementById('metric4Sub').innerText = 'GRACE';
+
+            // Show Back Button
+            document.getElementById('backButtonContainer').classList.remove('hidden');
+
+            // Force Suzi Discord Profile & Connect
+            targetDiscordUsername = 'su_238';
+            connectLanyard();
+
+            // Play unique dreamy Suzi music
+            stopMusic();
+            startSuziMusic();
+            playTone(["C5", "E5", "G5", "B5"], "2n");
+        }
+
+        function resetToMainView() {
+            suziModeActive = false;
+            specialClickCount = 0;
+            stopMusic();
+
+            document.body.classList.remove('suzi-mode');
+            document.getElementById('navLogoLetter').innerText = 'V';
+            document.getElementById('navLogoLetter').className = 'font-serif italic font-bold text-gold text-lg';
+            document.getElementById('navTitle').innerText = 'Vespera Noir';
+            document.getElementById('heroCrownIcon').className = 'fa-solid fa-crown text-3xl text-gold-gradient transform group-hover:scale-110 transition duration-500';
+            document.getElementById('heroMainTitle').innerHTML = 'VESPERA <span class="font-semibold italic text-gold-gradient">NOIR</span>';
+            document.getElementById('heroSubtitle').innerText = '"Operating from the shadows, curating standard-setting aesthetic and commanding quiet influence."';
+            document.getElementById('mainFooter').innerText = '© Vespera Noir — Powered by Pure Aura & Lanyard Gateway';
+            document.getElementById('copyBtnText').innerText = 'Copy Profile Bio';
+
+            // Reset Metrics to Alex's Vespera Noir Stats
+            document.getElementById('metric1Val').innerText = '∞';
+            document.getElementById('metric1Sub').innerText = 'Aura Level';
+            document.getElementById('metric2Val').innerText = 'TOP 0.1%';
+            document.getElementById('metric2Sub').innerText = 'Status';
+            document.getElementById('metric3Val').innerText = 'UNMATCHED';
+            document.getElementById('metric3Sub').innerText = 'Presence';
+            document.getElementById('metric4Val').innerText = 'CLASSIFIED';
+            document.getElementById('metric4Sub').innerText = 'Influence';
+
+            // Switch Lanyard Target back to Alex's ID
+            targetDiscordUsername = '_gamer4ever2010';
+            connectLanyard();
+
+            // Hide Back Button
+            document.getElementById('backButtonContainer').classList.add('hidden');
+            playTone(["G4", "C4"], "4n");
+        }
+
+        // -------------------------------------------------------------
+        // Aura Overdrive Mode Logic
+        // -------------------------------------------------------------
+        let auraActive = false;
+        function toggleAuraMode() {
+            if (suziModeActive) return;
+            auraActive = !auraActive;
+            const body = document.body;
+            const btnText = document.getElementById('auraBtnText');
+
+            if (auraActive) {
+                body.classList.add('aura-active');
+                btnText.innerText = 'OVERDRIVE ON';
+                stopMusic();
+                startVesperaMusic(); // Unique Vespera dark atmospheric track
+                speedUpParticles(true);
+            } else {
+                body.classList.remove('aura-active');
+                btnText.innerText = 'Overdrive';
+                stopMusic();
+                speedUpParticles(false);
+                playTone("C3", "4n");
+            }
+        }
+
+        function triggerAuraBurst() {
+            if (!auraActive && !suziModeActive) toggleAuraMode();
+            playTone(["E4", "B4", "E5"], "4n");
+        }
+
+        // -------------------------------------------------------------
+        // Particle Engine
+        // -------------------------------------------------------------
+        const canvas = document.getElementById('ambientCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let speedMultiplier = 1;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedY = -(Math.random() * 0.5 + 0.2);
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.y += this.speedY * speedMultiplier;
+                if (this.y < 0) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                if (suziModeActive) {
+                    ctx.fillStyle = `rgba(255, 182, 193, ${this.opacity})`;
+                    ctx.shadowColor = 'rgba(255, 182, 193, 0.8)';
+                } else if (auraActive) {
+                    ctx.fillStyle = `rgba(239, 68, 68, ${this.opacity + 0.2})`;
+                    ctx.shadowColor = 'rgba(239, 68, 68, 0.9)';
+                } else {
+                    ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+                    ctx.shadowColor = 'rgba(212, 175, 55, 0.8)';
+                }
+                ctx.shadowBlur = 8;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 55; i++) particles.push(new Particle());
+
+        function speedUpParticles(active) {
+            speedMultiplier = active ? 3.8 : 1;
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // -------------------------------------------------------------
+        // Robust Discord WebSocket & Lanyard REST Integration
+        // -------------------------------------------------------------
+        let targetDiscordUsername = '_gamer4ever2010';
+        let currentWs = null;
+
+        async function connectLanyard() {
+            if (currentWs) {
+                currentWs.close();
+            }
+
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${targetDiscordUsername}`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    updateDiscordUI(data.data);
+                } else {
+                    applyFallbackProfile(targetDiscordUsername);
+                }
+            } catch(e) {
+                applyFallbackProfile(targetDiscordUsername);
+            }
+
+            currentWs = new WebSocket('wss://api.lanyard.rest/socket');
+            currentWs.onopen = () => {
+                currentWs.send(JSON.stringify({ op: 2, d: { subscribe_to_id: targetDiscordUsername } }));
+            };
+            currentWs.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                if (message.t === 'INIT_STATE' || message.t === 'PRESENCE_UPDATE') {
+                    updateDiscordUI(message.d);
+                }
+            };
+            currentWs.onerror = () => {
+                applyFallbackProfile(targetDiscordUsername);
+            };
+            currentWs.onclose = () => {
+                setTimeout(connectLanyard, 6000);
+            };
+        }
+
+        function applyFallbackProfile(username) {
+            const avatar = document.getElementById('dcAvatar');
+            const userEl = document.getElementById('dcUsername');
+            const customStatus = document.getElementById('dcCustomStatus');
+            const activity = document.getElementById('dcActivity');
+            const statusDot = document.getElementById('dcStatusDot');
+
+            userEl.innerText = username;
+            statusDot.className = "w-5 h-5 rounded-full border-2 border-black absolute bottom-0 right-0 bg-emerald-500";
+            avatar.src = "https://cdn.discordapp.com/embed/avatars/0.png";
+
+            if (username === 'su_238') {
+                customStatus.innerText = "Suzi Noir — Special Resonance";
+                activity.innerHTML = `<i class="fa-brands fa-discord"></i> <span>Online in Suzi Realm</span>`;
+            } else {
+                customStatus.innerText = "Founder of Vespera Noir";
+                activity.innerHTML = `<i class="fa-brands fa-discord"></i> <span>Online in Vespera Noir</span>`;
+            }
+        }
+
+        function updateDiscordUI(d) {
+            if (!d || !d.discord_user) {
+                applyFallbackProfile(targetDiscordUsername);
+                return;
+            }
+
+            const avatar = document.getElementById('dcAvatar');
+            const statusDot = document.getElementById('dcStatusDot');
+            const userEl = document.getElementById('dcUsername');
+            const customStatus = document.getElementById('dcCustomStatus');
+            const activity = document.getElementById('dcActivity');
+
+            const u = d.discord_user;
+            userEl.innerText = u.username || targetDiscordUsername;
+
+            if (u.avatar) {
+                avatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+            } else {
+                avatar.src = `https://cdn.discordapp.com/embed/avatars/${u.discriminator ? u.discriminator % 5 : 0}.png`;
+            }
+
+            if (suziModeActive) {
+                customStatus.innerText = "Suzi Noir — Crown of Elegance";
+            } else {
+                customStatus.innerText = "Founder of Vespera Noir";
+            }
+
+            const statusColors = { online: 'bg-emerald-500', idle: 'bg-amber-500', dnd: 'bg-rose-500', offline: 'bg-zinc-600' };
+            statusDot.className = `w-5 h-5 rounded-full border-2 border-black absolute bottom-0 right-0 ${statusColors[d.discord_status] || 'bg-zinc-600'}`;
+
+            if (d.spotify && d.spotify.song) {
+                activity.innerHTML = `<i class="fa-brands fa-spotify text-emerald-400"></i> <span class="truncate">Listening to <b>${d.spotify.song}</b> by ${d.spotify.artist}</span>`;
+            } else if (d.activities && d.activities.length > 0) {
+                const act = d.activities.find(a => a.type === 0) || d.activities[0];
+                activity.innerHTML = `<i class="fa-solid fa-gamepad text-gold"></i> <span class="truncate">Playing <b>${act.name}</b></span>`;
+            } else {
+                activity.innerHTML = `<i class="fa-brands fa-discord"></i> <span class="truncate">Online in Discord</span>`;
+            }
+        }
+
+        connectLanyard();
+
+        function copyDiscordBio() {
+            const copyText = suziModeActive ? "su_238" : "Founder of Vespera Noir";
+            navigator.clipboard.writeText(copyText);
+            const icon = document.getElementById('copyIcon');
+            icon.className = "fa-solid fa-check text-gold";
+            playTone("E5", "8n");
+            setTimeout(() => { icon.className = "fa-regular fa-copy"; }, 2000);
+        }
+    </script>
+</body>
+</html>
