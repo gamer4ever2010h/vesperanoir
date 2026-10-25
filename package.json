@@ -1,0 +1,23 @@
+{
+  "name": "vesperanoir",
+  "version": "1.0.0",
+  "description": "VESPERA NOIR - Pure Aura landing page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gamer4ever2010h/vesperanoir.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gamer4ever2010h/vesperanoir/issues"
+  },
+  "homepage": "https://github.com/gamer4ever2010h/vesperanoir#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
