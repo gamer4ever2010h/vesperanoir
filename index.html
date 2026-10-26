@@ -116,7 +116,13 @@
             100% { transform: translate(0, 0) rotate(0deg); }
         }
 
-        /* Custom Scrollbar */
+        .interactive-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #030304; }
         ::-webkit-scrollbar-thumb { background: #1a1a22; border-radius: 3px; }
@@ -145,7 +151,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <!-- SPECIAL FRIEND BUTTON (10 clicks to unlock Suzi, no count/name visible) -->
+                <!-- SPECIAL FRIEND BUTTON (10 clicks secret unlock) -->
                 <button onclick="handleSpecialFriendClick()" class="bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs uppercase tracking-widest px-4 py-2 rounded-full transition-all duration-300 flex items-center space-x-2 shadow-[0_0_15px_rgba(255,182,193,0.25)] cursor-pointer whitespace-nowrap">
                     <i class="fa-solid fa-heart text-pink-400"></i>
                     <span>Special Friend</span>
@@ -188,23 +194,23 @@
                 </button>
             </div>
 
-            <!-- CLEAN AURA METRICS (Fixed styling & bug-free layout) -->
+            <!-- METRICS CARD SYSTEM -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-8">
-                <div class="glass-gold p-5 rounded-2xl text-center">
+                <div class="glass-gold p-5 rounded-2xl text-center interactive-card">
                     <div id="metric1Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">∞</div>
-                    <div id="metric1Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Aura Level</div>
+                    <div id="metric1Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1.5 font-medium whitespace-nowrap">Aura Level</div>
                 </div>
-                <div class="glass-gold p-5 rounded-2xl text-center">
+                <div class="glass-gold p-5 rounded-2xl text-center interactive-card">
                     <div id="metric2Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">TOP 0.1%</div>
-                    <div id="metric2Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Status</div>
+                    <div id="metric2Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1.5 font-medium whitespace-nowrap">Status</div>
                 </div>
-                <div class="glass-gold p-5 rounded-2xl text-center">
+                <div class="glass-gold p-5 rounded-2xl text-center interactive-card">
                     <div id="metric3Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">UNMATCHED</div>
-                    <div id="metric3Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Presence</div>
+                    <div id="metric3Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1.5 font-medium whitespace-nowrap">Presence</div>
                 </div>
-                <div class="glass-gold p-5 rounded-2xl text-center">
+                <div class="glass-gold p-5 rounded-2xl text-center interactive-card">
                     <div id="metric4Val" class="text-2xl md:text-3xl font-serif font-bold text-gold-gradient tracking-wider whitespace-nowrap">CLASSIFIED</div>
-                    <div id="metric4Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1 whitespace-nowrap">Influence</div>
+                    <div id="metric4Sub" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mt-1.5 font-medium whitespace-nowrap">Influence</div>
                 </div>
             </div>
         </section>
@@ -215,7 +221,7 @@
                 <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left w-full sm:w-auto">
                         <div class="relative flex-shrink-0">
-                            <img id="dcAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-20 h-20 rounded-full border-2 border-gold/50 object-cover shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                            <img id="dcAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-20 h-20 rounded-full border-2 border-gold/50 object-cover shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all duration-500">
                             <span id="dcStatusDot" class="w-5 h-5 rounded-full bg-zinc-600 border-2 border-black absolute bottom-0 right-0"></span>
                         </div>
                         <div class="min-w-0 flex-1">
@@ -276,7 +282,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT ENGINE & UNIQUE AUDIO SOUNDSCAPES -->
+    <!-- JAVASCRIPT ENGINE & SOUNDSCAPES -->
     <script>
         let synth = null;
         let soundscapeSynth = null;
@@ -297,7 +303,6 @@
                 }).toDestination();
                 synth.volume.value = -12;
 
-                // Flexible soundscape synthesizer for background music
                 soundscapeSynth = new Tone.PolySynth(Tone.Synth, {
                     oscillator: { type: 'sine' },
                     envelope: { attack: 1.5, decay: 2.0, sustain: 0.3, release: 3.0 }
@@ -317,7 +322,6 @@
             } catch(e) {}
         }
 
-        // Distinct music track for Vespera Noir (Deep, mysterious obsidian chords)
         function startVesperaMusic() {
             initAudioEngine();
             if (isMusicPlaying) return;
@@ -340,7 +344,6 @@
             } catch(e) {}
         }
 
-        // Completely unique, magical, dreamy music track for Suzi Mode
         function startSuziMusic() {
             initAudioEngine();
             if (isMusicPlaying) return;
@@ -413,9 +416,7 @@
             playTone(["C4", "E4", "G4", "C5"], "4n");
         }
 
-        // -------------------------------------------------------------
-        // Secret 10-Click Special Friend (SUZI MODE) Logic with Go Back
-        // -------------------------------------------------------------
+        // Secret 10-Click Special Friend (SUZI MODE)
         let specialClickCount = 0;
         let suziModeActive = false;
 
@@ -442,7 +443,6 @@
             document.getElementById('mainFooter').innerText = '© Vespera Noir & Suzi — Special Friendship Domain';
             document.getElementById('copyBtnText').innerText = 'Copy Suzi Discord';
 
-            // Epic Suzi Metrics Update
             document.getElementById('metric1Val').innerText = 'MAX';
             document.getElementById('metric1Sub').innerText = 'ELEGANCE';
             document.getElementById('metric2Val').innerText = 'ROYALTY';
@@ -452,14 +452,12 @@
             document.getElementById('metric4Val').innerText = 'SOVEREIGN';
             document.getElementById('metric4Sub').innerText = 'GRACE';
 
-            // Show Back Button
             document.getElementById('backButtonContainer').classList.remove('hidden');
 
-            // Force Suzi Discord Profile & Connect
             targetDiscordUsername = 'su_238';
+            targetDiscordId = 'su_238';
             connectLanyard();
 
-            // Play unique dreamy Suzi music
             stopMusic();
             startSuziMusic();
             playTone(["C5", "E5", "G5", "B5"], "2n");
@@ -480,7 +478,6 @@
             document.getElementById('mainFooter').innerText = '© Vespera Noir — Powered by Pure Aura & Lanyard Gateway';
             document.getElementById('copyBtnText').innerText = 'Copy Profile Bio';
 
-            // Reset Metrics to Alex's Vespera Noir Stats
             document.getElementById('metric1Val').innerText = '∞';
             document.getElementById('metric1Sub').innerText = 'Aura Level';
             document.getElementById('metric2Val').innerText = 'TOP 0.1%';
@@ -490,18 +487,14 @@
             document.getElementById('metric4Val').innerText = 'CLASSIFIED';
             document.getElementById('metric4Sub').innerText = 'Influence';
 
-            // Switch Lanyard Target back to Alex's ID
             targetDiscordUsername = '_gamer4ever2010';
+            targetDiscordId = '837266624835256330';
             connectLanyard();
 
-            // Hide Back Button
             document.getElementById('backButtonContainer').classList.add('hidden');
             playTone(["G4", "C4"], "4n");
         }
 
-        // -------------------------------------------------------------
-        // Aura Overdrive Mode Logic
-        // -------------------------------------------------------------
         let auraActive = false;
         function toggleAuraMode() {
             if (suziModeActive) return;
@@ -513,7 +506,7 @@
                 body.classList.add('aura-active');
                 btnText.innerText = 'OVERDRIVE ON';
                 stopMusic();
-                startVesperaMusic(); // Unique Vespera dark atmospheric track
+                startVesperaMusic();
                 speedUpParticles(true);
             } else {
                 body.classList.remove('aura-active');
@@ -529,9 +522,7 @@
             playTone(["E4", "B4", "E5"], "4n");
         }
 
-        // -------------------------------------------------------------
         // Particle Engine
-        // -------------------------------------------------------------
         const canvas = document.getElementById('ambientCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -588,19 +579,16 @@
         }
         animateParticles();
 
-        // -------------------------------------------------------------
-        // Robust Discord WebSocket & Lanyard REST Integration
-        // -------------------------------------------------------------
+        // Lanyard Integration
         let targetDiscordUsername = '_gamer4ever2010';
+        let targetDiscordId = '837266624835256330';
         let currentWs = null;
 
         async function connectLanyard() {
-            if (currentWs) {
-                currentWs.close();
-            }
+            if (currentWs) currentWs.close();
 
             try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${targetDiscordUsername}`);
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${targetDiscordId}`);
                 const data = await res.json();
                 if (data.success && data.data) {
                     updateDiscordUI(data.data);
@@ -611,22 +599,20 @@
                 applyFallbackProfile(targetDiscordUsername);
             }
 
-            currentWs = new WebSocket('wss://api.lanyard.rest/socket');
-            currentWs.onopen = () => {
-                currentWs.send(JSON.stringify({ op: 2, d: { subscribe_to_id: targetDiscordUsername } }));
-            };
-            currentWs.onmessage = (event) => {
-                const message = JSON.parse(event.data);
-                if (message.t === 'INIT_STATE' || message.t === 'PRESENCE_UPDATE') {
-                    updateDiscordUI(message.d);
-                }
-            };
-            currentWs.onerror = () => {
-                applyFallbackProfile(targetDiscordUsername);
-            };
-            currentWs.onclose = () => {
-                setTimeout(connectLanyard, 6000);
-            };
+            try {
+                currentWs = new WebSocket('wss://api.lanyard.rest/socket');
+                currentWs.onopen = () => {
+                    currentWs.send(JSON.stringify({ op: 2, d: { subscribe_to_id: targetDiscordId } }));
+                };
+                currentWs.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    if (message.t === 'INIT_STATE' || message.t === 'PRESENCE_UPDATE') {
+                        updateDiscordUI(message.d);
+                    }
+                };
+                currentWs.onerror = () => applyFallbackProfile(targetDiscordUsername);
+                currentWs.onclose = () => setTimeout(connectLanyard, 6000);
+            } catch(e) {}
         }
 
         function applyFallbackProfile(username) {
@@ -638,12 +624,13 @@
 
             userEl.innerText = username;
             statusDot.className = "w-5 h-5 rounded-full border-2 border-black absolute bottom-0 right-0 bg-emerald-500";
-            avatar.src = "https://cdn.discordapp.com/embed/avatars/0.png";
-
+            
             if (username === 'su_238') {
-                customStatus.innerText = "Suzi Noir — Special Resonance";
+                avatar.src = "https://cdn.discordapp.com/embed/avatars/1.png";
+                customStatus.innerText = "Suzi Noir — Crown of Elegance";
                 activity.innerHTML = `<i class="fa-brands fa-discord"></i> <span>Online in Suzi Realm</span>`;
             } else {
+                avatar.src = "https://cdn.discordapp.com/embed/avatars/0.png";
                 customStatus.innerText = "Founder of Vespera Noir";
                 activity.innerHTML = `<i class="fa-brands fa-discord"></i> <span>Online in Vespera Noir</span>`;
             }
